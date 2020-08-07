@@ -134,31 +134,42 @@ if __name__ == "__main__":
 
         assert type(s) is str
 
-        if s is not None:
-            logger.info(f"The following string was copied to the clipboard:\n{s}")
+        try:
+            if s not in {"", None}:
+                print(s)
+                logger.info(f"The following string was copied to the clipboard:\n{s}")
 
-            ts = datetime.timestamp(datetime.now())
-            outfile = outdir / f"{ts}.svg"
+                ts = datetime.timestamp(datetime.now())
+                outfile = outdir / f"{ts}.svg"
 
-            svg = pygments.highlight(code=s, lexer=lexer, formatter=formatter)
+                svg = pygments.highlight(code=s, lexer=lexer, formatter=formatter)
 
-            if args.crop:
-                height, width = infer_height_and_width(text=s, svg=svg)
-                logger.info(f"cropping svg to height:{height} width:{width}")
-                from regex import sub
+                if args.crop:
+                    height, width = infer_height_and_width(text=s, svg=svg)
+                    logger.info(f"cropping svg to height:{height} width:{width}")
+                    from regex import sub
 
-                svg = sub(
-                    pattern="<svg",
-                    repl=f'<svg height="{height}" width="{width}" ',
-                    string=svg,
+                    svg = sub(
+                        pattern="<svg",
+                        repl=f'<svg height="{height}" width="{width}" ',
+                        string=svg,
+                    )
+
+                with open(outfile, "w") as f:
+
+                    f.write(svg)
+
+                if args.overwrite_clipboard:
+                    pyperclip.copy(svg)
+
+                logger.info(f"Snippet stores as: {outfile}")
+            else:
+                logger.warning(
+                    "Contents of clipboard appears to be empty, no snippet generated"
                 )
-
-            with open(outfile, "w") as f:
-
-                f.write(svg)
-
-            if args.overwrite_clipboard:
-                pyperclip.copy(svg)
-
-            logger.info(f"Snippet stores as: {outfile}")
+        except:
+            logger.error(
+                "An exception was raised when parsing clipboard, no snippet generated",
+                exc_info=True,
+            )
 
