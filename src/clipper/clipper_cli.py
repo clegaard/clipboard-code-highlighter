@@ -21,7 +21,6 @@ from pygments.token import (
 )
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import get_formatter_by_name
-from pygments.styles import get_style_by_name
 
 logger = logging.getLogger(__file__)
 logging.basicConfig(level=logging.DEBUG)
@@ -111,11 +110,20 @@ def main():
         help="attempt to set the height and width of the svg file to fit contents",
     )
 
-    parser.add_argument(
-        "--overwrite-clipboard",
-        dest="overwrite_clipboard",
+    overwrite_clipboard_group = parser.add_mutually_exclusive_group()
+
+    overwrite_clipboard_group.add_argument(
+        "--overwrite-clipboard-text",
+        dest="overwrite_clipboard_text",
         action="store_true",
-        help="copy the results into the clipboard",
+        help="copy the textual representation of the result into the clipboard",
+    )
+
+    overwrite_clipboard_group.add_argument(
+        "--overwrite-clipboard-file",
+        dest="overwrite_clipboard_file",
+        action="store_true",
+        help="copy the results into the clipboard as a reference to the stored file",
     )
 
     parser.add_argument(
@@ -164,11 +172,13 @@ def main():
                     )
 
                 with open(outfile, "w") as f:
-
                     f.write(svg)
 
-                if args.overwrite_clipboard:
+                if args.overwrite_clipboard_text:
                     pyperclip.copy(svg)
+
+                if args.overwrite_clipboard_file:
+                    raise NotImplementedError("Not implemented")
 
                 logger.info(f"Snippet stores as: {outfile}")
             else:
