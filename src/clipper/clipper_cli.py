@@ -47,7 +47,7 @@ class VSCodeLight(Style):
     styles = {
         Whitespace: "#bbbbbb",
         Comment: "#008000",
-        Comment.Preproc: "noitalic #008080",
+        Comment.Preproc: "#0000FF",
         Comment.Special: "noitalic bold",
         String: "#A31515",
         String.Char: "#800080",
@@ -105,6 +105,13 @@ def main():
     )
 
     parser.add_argument(
+        "--line-numbers",
+        dest="line_numbers",
+        action="store_true",
+        help="add line numbers to generated output",
+    )
+
+    parser.add_argument(
         "--crop",
         action="store_true",
         help="attempt to set the height and width of the svg file to fit contents",
@@ -143,7 +150,9 @@ def main():
     while True:
 
         lexer = get_lexer_by_name(args.lexer)
-        formatter = get_formatter_by_name(args.formatter, style=VSCodeLight)
+        formatter = get_formatter_by_name(
+            args.formatter, style=VSCodeLight, linenos=args.line_numbers
+        )
 
         logger.info("waiting for new paste")
         s = pyperclip.waitForNewPaste()
