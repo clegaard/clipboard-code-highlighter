@@ -90,20 +90,25 @@ def infer_height_and_width(text: str, svg: str):
     return (max_height, max_width)
 
 
-if __name__ == "__main__":
-
-    parser = argparse.ArgumentParser(prog="clipper")
-    parser.add_argument(
-        "--lexer", default="c", help="which lexer to use for parsing code"
+def main():
+    parser = argparse.ArgumentParser(
+        prog="clipper",
+        description="Automated highlighting and export of code in clipboard using Pygments. For available lexers and formatters refer to output from 'pygmentize -L'",
     )
     parser.add_argument(
-        "--formatter", default="svg", help="formatter to use for exporting code"
+        "--lexer", default="c", help="which lexer/language to use for parsing code",
+    )
+    parser.add_argument(
+        "--formatter",
+        default="svg",
+        choices=["svg"],
+        help="formatter to use for exporting code",
     )
 
     parser.add_argument(
         "--crop",
         action="store_true",
-        help="try to crop the svg file to fit the highlighted code",
+        help="attempt to set the height and width of the svg file to fit contents",
     )
 
     parser.add_argument(
@@ -119,10 +124,13 @@ if __name__ == "__main__":
         help="directory into which the exported snippets are saved",
     )
 
+    # parse arguments
     args = parser.parse_args()
 
     outdir = Path(args.outdir)
     outdir.mkdir(exist_ok=True)
+
+    # handle clipping
 
     while True:
 
@@ -172,4 +180,3 @@ if __name__ == "__main__":
                 "An exception was raised when parsing clipboard, no snippet generated",
                 exc_info=True,
             )
-
