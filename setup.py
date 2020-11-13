@@ -8,6 +8,6 @@ setup(
     version="0.0.1",
     package_dir={"": "src"},
     packages=find_packages("src"),
-    install_requires=["pygments", "pyperclip"],
+    install_requires=["pygments", "pyperclip", "regex"],
     entry_points={"console_scripts": ["clipper=clipper.clipper_cli:main"]},
 )
